@@ -129,7 +129,7 @@ public class JwtUtil {
     public String resolveToken(HttpServletRequest request){
         String bearerToken = request.getHeader(Constants.AUTHORIZATION_HEADER);
         if (!StringUtils.hasText(bearerToken) || !bearerToken.startsWith("Bearer ")) {
-            throw new CustomException(ErrorCode.EMPTY_TOKEN_ERROR);
+            throw new CustomException(ErrorCode.ACCESS_TOKEN_MISSING);
         }
         return bearerToken.substring(7);
     }

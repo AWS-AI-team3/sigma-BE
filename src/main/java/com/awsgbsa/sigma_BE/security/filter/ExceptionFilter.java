@@ -28,14 +28,14 @@ public class ExceptionFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (AuthenticationException ex) {
-            // Spring Security 내부 Authentication 실패
-            log.warn("ExceptionFilter - AuthenticationException : {}", ex.getMessage());
-            apiResponder.sendError(response, ErrorCode.ACCESS_TOKEN_MISSING, ex);
-        } catch (AccessDeniedException ex) {
-            // Spring Security 내부 인가 실패
-            log.warn("ExceptionFilter - AccessDeniedException : {}", ex.getMessage());
-            apiResponder.sendError(response, ErrorCode.ACCESS_DENIED, ex);
+//        } catch (AuthenticationException ex) {
+//            // Spring Security 내부 Authentication 실패
+//            log.warn("ExceptionFilter - AuthenticationException : {}", ex.getMessage());
+//            apiResponder.sendError(response, ErrorCode.INVALID_AUTENTICATION, ex);
+//        } catch (AccessDeniedException ex) {
+//            // Spring Security 내부 인가 실패
+//            log.warn("ExceptionFilter - AccessDeniedException : {}", ex.getMessage());
+//            apiResponder.sendError(response, ErrorCode.ACCESS_DENIED, ex);
         } catch (CustomException ex) {
             // 커스텀 예외
             log.warn("ExceptionFilter - CustomExcetpion : {}", ex.getMessage());

@@ -21,6 +21,6 @@ public class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
         log.warn("JsonAuthenticationEntryPoint - AuthenticationException : {}", authException.getMessage());
-        apiResponder.sendError(response, ErrorCode.ACCESS_TOKEN_MISSING, authException);
+        apiResponder.sendError(response, ErrorCode.INVALID_AUTENTICATION, authException);
     }
 }
