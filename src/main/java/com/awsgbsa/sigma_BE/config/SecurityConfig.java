@@ -3,6 +3,9 @@ package com.awsgbsa.sigma_BE.config;
 import com.awsgbsa.sigma_BE.common.Constants;
 import com.awsgbsa.sigma_BE.exception.JsonAccessDeniedHandler;
 import com.awsgbsa.sigma_BE.exception.JsonAuthenticationEntryPoint;
+import com.awsgbsa.sigma_BE.security.filter.ExceptionFilter;
+import com.awsgbsa.sigma_BE.security.filter.JwtFilter;
+import com.awsgbsa.sigma_BE.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,6 +30,8 @@ import java.util.List;
 public class SecurityConfig {
     private final JsonAuthenticationEntryPoint authenticationEntryPoint;
     private final JsonAccessDeniedHandler accessDeniedHandler;
+    private final ExceptionFilter exceptionFilter;
+    private final JwtUtil jwtUtil;
 
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,10 +47,13 @@ public class SecurityConfig {
                         .requestMatchers(Constants.PERMIT_ALL_URLS.toArray(new String[0])).permitAll()
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling( exception -> exception
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler)
-                )
+//                .exceptionHandling( exception -> exception
+//                        .authenticationEntryPoint(authenticationEntryPoint)
+//                        .accessDeniedHandler(accessDeniedHandler)
+//                )
+
+                .addFilterBefore(exceptionFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
         ;
         return http.build();
     }
