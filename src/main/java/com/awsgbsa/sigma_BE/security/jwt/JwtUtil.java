@@ -57,9 +57,8 @@ public class JwtUtil {
     public String createAccessToken(Long userId) {
         return Jwts.builder()
                 .setSubject(userId.toString())
-                .setIssuedAt(java.util.Date.from(java.time.Instant.now()))
                 .setExpiration(java.util.Date.from(java.time.Instant.now().plusSeconds(accessTokenValidityInSeconds)))
-                .signWith(accessKey)
+                .signWith(accessKey, SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -92,7 +91,6 @@ public class JwtUtil {
         if (token == null || token.trim().isEmpty()) {
             throw new CustomException(ErrorCode.EMPTY_TOKEN_ERROR);
         }
-
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
