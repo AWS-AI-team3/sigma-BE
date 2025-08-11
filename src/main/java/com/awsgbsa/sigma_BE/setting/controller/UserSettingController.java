@@ -4,6 +4,7 @@ import com.awsgbsa.sigma_BE.common.ApiResponse;
 import com.awsgbsa.sigma_BE.security.jwt.JwtUtil;
 import com.awsgbsa.sigma_BE.setting.domain.UserSettings;
 import com.awsgbsa.sigma_BE.setting.dto.GesturePatchRequest;
+import com.awsgbsa.sigma_BE.setting.dto.SettingShowRequestDto;
 import com.awsgbsa.sigma_BE.setting.dto.UserSettingsResponse;
 import com.awsgbsa.sigma_BE.setting.service.UserSettingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,5 +52,35 @@ public class UserSettingController {
 
         userSettingService.updateGesture(userId, gesturePatchRequest);
         return ResponseEntity.ok(ApiResponse.success("기능동작 변경 완료되었습니다."));
+    }
+
+    @PostMapping("/skeleton")
+    @Operation(summary = "skeleton 표시여부 설정",
+            description = "skeleton 표시여부 활성화(true)/비활성화(false)")
+    public ResponseEntity<ApiResponse<?>> patchSkeletonShow(
+            HttpServletRequest request,
+            @Parameter(description = "skeleton 표시여부의 true/false", required = true)
+            @RequestBody SettingShowRequestDto settingShowRequestDto
+    ){
+        String token = jwtUtil.resolveToken(request);
+        Long userId = jwtUtil.extractUserId(token, false);
+
+        userSettingService.updateSkeletonShown(userId, settingShowRequestDto);
+        return ResponseEntity.ok(ApiResponse.success("skeleton 표시여부가 변경되었습니다."));
+    }
+
+    @PostMapping("/cursor")
+    @Operation(summary = "cursor 표시여부 설정",
+            description = "cursor 표시여부 활성화(true)/비활성화(false)")
+    public ResponseEntity<ApiResponse<?>> patchCursorShow(
+            HttpServletRequest request,
+            @Parameter(description = "cursor 표시여부의 true/false", required = true)
+            @RequestBody SettingShowRequestDto settingShowRequestDto
+    ){
+        String token = jwtUtil.resolveToken(request);
+        Long userId = jwtUtil.extractUserId(token, false);
+
+        userSettingService.updateCursorShown(userId, settingShowRequestDto);
+        return ResponseEntity.ok(ApiResponse.success("cursor 표시여부가 변경되었습니다."));
     }
 }

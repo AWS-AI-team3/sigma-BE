@@ -27,6 +27,7 @@ public enum ErrorCode {
     DUPLICATE_MOTION_UPDATE(HttpStatus.BAD_REQUEST, "동일 모션을 여러 컨트롤에 중복지정할 수 없습니다."),
     USER_SETTINGS_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자의 모션 세팅정보를 불러올 수 없습니다."),
     INVALID_MOTION_VALUE(HttpStatus.BAD_REQUEST, "유효하지 않은 모션값 설정입니다."),
+    USER_SETTINGS_FAIL(HttpStatus.BAD_REQUEST, "사용자 설정변경에 실패하였습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버내부 문제가 발생했습니다." )
     ;

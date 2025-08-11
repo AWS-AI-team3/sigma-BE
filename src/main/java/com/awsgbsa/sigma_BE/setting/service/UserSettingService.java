@@ -5,6 +5,7 @@ import com.awsgbsa.sigma_BE.exception.ErrorCode;
 import com.awsgbsa.sigma_BE.setting.domain.Motion;
 import com.awsgbsa.sigma_BE.setting.domain.UserSettings;
 import com.awsgbsa.sigma_BE.setting.dto.GesturePatchRequest;
+import com.awsgbsa.sigma_BE.setting.dto.SettingShowRequestDto;
 import com.awsgbsa.sigma_BE.setting.dto.UserSettingsResponse;
 import com.awsgbsa.sigma_BE.setting.repository.UserSettingRepository;
 import com.awsgbsa.sigma_BE.user.domain.User;
@@ -67,5 +68,17 @@ public class UserSettingService {
                 throw new CustomException(ErrorCode.DUPLICATE_MOTION_UPDATE);
             }
         }
+    }
+
+    @Transactional
+    public void updateSkeletonShown(Long userId, SettingShowRequestDto settingShowRequestDto) {
+        int updateCnt = userSettingRepository.updateShowSkeleton(userId, settingShowRequestDto.isShow());
+        if (updateCnt == 0) throw new CustomException(ErrorCode.USER_SETTINGS_FAIL);
+    }
+
+    @Transactional
+    public void updateCursorShown(Long userId, SettingShowRequestDto settingShowRequestDto) {
+        int updateCnt = userSettingRepository.updateShowCursor(userId, settingShowRequestDto.isShow());
+        if (updateCnt == 0) throw new CustomException(ErrorCode.USER_SETTINGS_FAIL);
     }
 }

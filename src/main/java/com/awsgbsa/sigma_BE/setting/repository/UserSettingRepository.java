@@ -28,4 +28,26 @@ public class UserSettingRepository {
                 .getResultStream()
                 .findFirst();
     }
+
+    public int updateShowSkeleton(Long userId, boolean value) {
+        return em.createQuery("""
+                    update UserSettings s
+                    set s.showSkeleton = :val
+                    where s.user.id = :userId
+                """)
+                .setParameter("val", value)
+                .setParameter("userId", userId)
+                .executeUpdate();
+    }
+
+    public int updateShowCursor(Long userId, boolean value) {
+        return em.createQuery("""
+                    update UserSettings s
+                    set s.showCursor = :val
+                    where s.user.id = :userId
+                """)
+                .setParameter("val", value)
+                .setParameter("userId", userId)
+                .executeUpdate();
+    }
 }
