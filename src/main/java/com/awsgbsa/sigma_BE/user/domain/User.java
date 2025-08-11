@@ -26,4 +26,7 @@ public class User {
 
     @Column(name = "profile_url", columnDefinition = "TEXT")
     private String profileUrl;
+
+    @Enumerated(EnumType.STRING)
+    private SubscriptStatus subscriptStatus;
 }

@@ -4,6 +4,7 @@ import com.awsgbsa.sigma_BE.exception.CustomException;
 import com.awsgbsa.sigma_BE.exception.ErrorCode;
 import com.awsgbsa.sigma_BE.security.jwt.JwtUtil;
 import com.awsgbsa.sigma_BE.user.domain.LoginProvider;
+import com.awsgbsa.sigma_BE.user.domain.SubscriptStatus;
 import com.awsgbsa.sigma_BE.user.domain.User;
 import com.awsgbsa.sigma_BE.user.dto.GoogleLoginRequest;
 import com.awsgbsa.sigma_BE.user.dto.LoginResponse;
@@ -67,6 +68,7 @@ public class GoogleOauthService {
                         .userName(name)
                         .loginProvider(LoginProvider.GOOGLE)
                         .createdAt(LocalDateTime.now())
+                        .subscriptStatus(SubscriptStatus.FREE)
                         .profileUrl(profileUrl)
                         .build()));
 
