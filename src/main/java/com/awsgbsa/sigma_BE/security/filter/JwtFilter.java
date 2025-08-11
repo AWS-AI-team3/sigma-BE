@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -20,9 +21,11 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {
     private final JwtUtil jwtUtil;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     private boolean isPermitAll(String uri) {
-        return Constants.PERMIT_ALL_URLS.stream().anyMatch(uri::startsWith);
+        return Constants.PERMIT_ALL_URLS.stream()
+                .anyMatch(pattern -> pathMatcher.match(pattern, uri));
     }
 
     @Override

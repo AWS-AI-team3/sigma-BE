@@ -19,6 +19,8 @@ public class Constants {
             "/favicon.ico",
             "/error",
             "/test",
+            "/swagger-ui/index.html",
+            "/v3/api-docs",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-resources/**",
