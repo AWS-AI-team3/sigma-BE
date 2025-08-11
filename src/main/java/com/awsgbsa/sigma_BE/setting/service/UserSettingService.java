@@ -5,6 +5,7 @@ import com.awsgbsa.sigma_BE.exception.ErrorCode;
 import com.awsgbsa.sigma_BE.setting.domain.Motion;
 import com.awsgbsa.sigma_BE.setting.domain.UserSettings;
 import com.awsgbsa.sigma_BE.setting.dto.GesturePatchRequest;
+import com.awsgbsa.sigma_BE.setting.dto.UserSettingsResponse;
 import com.awsgbsa.sigma_BE.setting.repository.UserSettingRepository;
 import com.awsgbsa.sigma_BE.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,21 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserSettingService {
     private final UserSettingRepository userSettingRepository;
+
+    public UserSettingsResponse getUserSettings(Long userId) {
+        UserSettings settings = userSettingRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_SETTINGS_NOT_FOUND));
+
+        return UserSettingsResponse.builder()
+                .showSkeleton(settings.isShowSkeleton())
+                .showCursor(settings.isShowCursor())
+                .motionLeftClick(settings.getMotionLeftClick().name())
+                .motionRightClick(settings.getMotionRightClick().name())
+                .motionWheelScroll(settings.getMotionWheelScroll().name())
+                .motionRecordStart(settings.getMotionRecordStart().name())
+                .motionRecordStop(settings.getMotionRecordStop().name())
+                .build();
+    }
 
     @Transactional
     public void updateGesture(Long userId, GesturePatchRequest req) {
