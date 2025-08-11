@@ -2,6 +2,5 @@ package com.awsgbsa.sigma_BE.setting.domain;
 
 public enum Motion {
     UNASSIGNED,            // 사용안함
-    PALM, FIST, POINT, PINCH,
-    SWIPE_UP, SWIPE_DOWN, SWIPE_LEFT, SWIPE_RIGHT
+    M1, M2, M3, M4,  M5, M6, M7, M8, M9
 }

@@ -1,11 +1,10 @@
 package com.awsgbsa.sigma_BE.setting.domain;
 
+import com.awsgbsa.sigma_BE.exception.CustomException;
+import com.awsgbsa.sigma_BE.exception.ErrorCode;
 import com.awsgbsa.sigma_BE.user.domain.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
@@ -13,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Getter @Service
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -28,40 +27,43 @@ public class UserSettings {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "show_skeleton", nullable = false)
     private boolean showSkeleton;
 
+    @Column(name = "show_cursor", nullable = false)
     private boolean showCursor;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "motion_left_click", nullable = false)
     private Motion motionLeftClick; // 좌클릭 기능
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "motion_right_click", nullable = false)
     private Motion motionRightClick; // 우클릭 기능
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "motion_wheel_scroll", nullable = false)
     private Motion motionWheelScroll; // 스크롤다운 기능
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "motion_record_start", nullable = false)
     private Motion motionRecordStart; // 녹음시작 기능
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "motion_record_stop", nullable = false)
     private Motion motionRecordStop; // 녹음중지 기능
 
-    @PrePersist
-    @PreUpdate
-    private void validateUniqueMotions() {
-        // UNASSIGNED 제외하고 중복 금지
-        List<Motion> motions = List.of(
-                motionLeftClick, motionRightClick, motionWheelScroll,
-                motionRecordStart, motionRecordStop
-        );
-        Set<Motion> used = EnumSet.noneOf(Motion.class);
-        for (Motion m : motions) {
-            if (m == null || m == Motion.UNASSIGNED) continue;
-            if (!used.add(m)) {
-                throw new IllegalArgumentException("동일 모션을 여러 컨트롤에 중복 지정할 수 없습니다: " + m);
-            }
-        }
+    public static UserSettings defaults(User user) {
+        return UserSettings.builder()
+                .user(user)
+                .showSkeleton(true)
+                .showCursor(true)
+                .motionLeftClick(Motion.M1)
+                .motionRightClick(Motion.M2)
+                .motionWheelScroll(Motion.M3)
+                .motionRecordStart(Motion.M4)
+                .motionRecordStop(Motion.M5)
+        .build();
     }
 
 }

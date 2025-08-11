@@ -3,6 +3,8 @@ package com.awsgbsa.sigma_BE.user.service;
 import com.awsgbsa.sigma_BE.exception.CustomException;
 import com.awsgbsa.sigma_BE.exception.ErrorCode;
 import com.awsgbsa.sigma_BE.security.jwt.JwtUtil;
+import com.awsgbsa.sigma_BE.setting.domain.UserSettings;
+import com.awsgbsa.sigma_BE.setting.repository.UserSettingRepository;
 import com.awsgbsa.sigma_BE.user.domain.LoginProvider;
 import com.awsgbsa.sigma_BE.user.domain.SubscriptStatus;
 import com.awsgbsa.sigma_BE.user.domain.User;
@@ -33,6 +35,7 @@ public class GoogleOauthService {
     private final WebClient webClient;
     private final UserRepository userRepository;
     private final StringRedisTemplate redisTemplate;
+    private final UserSettingRepository userSettingsRepository;
 
     @Value("${google.client-id}")
     private String clientId;
@@ -63,14 +66,20 @@ public class GoogleOauthService {
 
         // 3. DB에 유저 확인 or 생성
         User user = userRepository.findByEmail(email)
-                .orElseGet(() -> userRepository.save(User.builder()
-                        .email(email)
-                        .userName(name)
-                        .loginProvider(LoginProvider.GOOGLE)
-                        .createdAt(LocalDateTime.now())
-                        .subscriptStatus(SubscriptStatus.FREE)
-                        .profileUrl(profileUrl)
-                        .build()));
+                .orElseGet(() -> {
+                        User saved = userRepository.save(User.builder()
+                            .email(email)
+                            .userName(name)
+                            .loginProvider(LoginProvider.GOOGLE)
+                            .createdAt(LocalDateTime.now())
+                            .subscriptStatus(SubscriptStatus.FREE)
+                            .profileUrl(profileUrl)
+                            .build());
+
+                        // 동시에 기본설정 생성
+                        userSettingsRepository.save(UserSettings.defaults(saved));
+                        return saved;
+                });
 
         // 4. JWT 발급
         String jwtAccessToken = jwtUtil.createAccessToken(user.getId());
