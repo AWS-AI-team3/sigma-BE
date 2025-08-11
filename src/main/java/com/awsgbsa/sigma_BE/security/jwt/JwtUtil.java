@@ -39,6 +39,7 @@ public class JwtUtil {
     private long accessTokenValidityInSeconds;
 
     @Value("${jwt.refresh-token-validity-in-seconds}")
+    @Getter
     private long refreshTokenValidityInSeconds;
 
     // 서명키

@@ -1,5 +1,7 @@
 package com.awsgbsa.sigma_BE.user.service;
 
+import com.awsgbsa.sigma_BE.exception.CustomException;
+import com.awsgbsa.sigma_BE.exception.ErrorCode;
 import com.awsgbsa.sigma_BE.security.jwt.JwtUtil;
 import com.awsgbsa.sigma_BE.user.domain.LoginProvider;
 import com.awsgbsa.sigma_BE.user.domain.User;
@@ -8,6 +10,7 @@ import com.awsgbsa.sigma_BE.user.dto.LoginResponse;
 import com.awsgbsa.sigma_BE.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -27,6 +31,7 @@ public class GoogleOauthService {
     private final JwtUtil jwtUtil;
     private final WebClient webClient;
     private final UserRepository userRepository;
+    private final StringRedisTemplate redisTemplate;
 
     @Value("${google.client-id}")
     private String clientId;
@@ -70,8 +75,12 @@ public class GoogleOauthService {
         String jwtRefreshToken = jwtUtil.createRefreshToken(user.getId());
 
         // Redis에 refreshToken저장
-        /*
-         */
+        try {
+            // Redis에 refreshToken 저장
+            redisTemplate.opsForValue().set("RT:" + user.getId(), jwtRefreshToken, Duration.ofDays(14));
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.REDIS_SAVE_FAIL);
+        }
 
         return new LoginResponse(jwtAccessToken, jwtRefreshToken);
     }

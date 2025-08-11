@@ -27,4 +27,6 @@ public class UserRepository {
                 .getResultStream()
                 .findFirst();
     }
+
+    public Optional<User> findOne(Long id){ return Optional.ofNullable(em.find(User.class, id)); }
 }
