@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sigma-backend
+  labels:
+    app: sigma-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sigma-backend
+  template:
+    metadata:
+      labels:
+        app: sigma-backend
+    spec:
+      containers:
+        - name: sigma-backend
+          image: 048271428028.dkr.ecr.ap-northeast-2.amazonaws.com/sigma-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: local
+      imagePullSecrets:
+        - name: ecr-secret
