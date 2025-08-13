@@ -4,6 +4,7 @@ import com.awsgbsa.sigma_BE.common.ApiResponse;
 import com.awsgbsa.sigma_BE.exception.CustomException;
 import com.awsgbsa.sigma_BE.exception.ErrorCode;
 import com.awsgbsa.sigma_BE.face.dto.*;
+import com.awsgbsa.sigma_BE.face.service.FaceSessionService;
 import com.awsgbsa.sigma_BE.face.service.S3Service;
 import com.awsgbsa.sigma_BE.face.service.RekognitionService;
 import com.awsgbsa.sigma_BE.security.jwt.JwtUtil;
@@ -31,6 +32,7 @@ public class FaceAuthController {
     private final JwtUtil jwtUtil;
     private final S3Service s3Service;
     private final RekognitionService rekognitionService;
+    private final FaceSessionService faceSessionService;
 
     @PostMapping("/register/presign")
     @Operation(summary = "얼굴인증 사진 등록 URL발급",
@@ -129,7 +131,9 @@ public class FaceAuthController {
         }
 
         if(verifyResult.isMatch()){
-            return ResponseEntity.ok(ApiResponse.success("사용자 얼굴인증에 성공했습니다."));
+            String faceSessionToken = faceSessionService.createSession(userId);
+            FaceSessionResponseDto sessionToken = FaceSessionResponseDto.builder().faceSessionToken(faceSessionToken).build();
+            return ResponseEntity.ok(ApiResponse.success(sessionToken));
         } else {
             throw new CustomException(ErrorCode.INVALID_FACE);
         }

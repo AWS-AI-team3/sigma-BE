@@ -40,7 +40,7 @@ public class RekognitionService {
         return callAiServer(detectEndpoint, req, DetectResultDto.class);
     }
 
-    // 얼굴검증
+    // 얼굴검증(인증)
     public VerifyResultDto verifyFace(String authKey, String registerKey) {
         AIVerifyRequestDto req = AIVerifyRequestDto.builder()
                 .src_key(authKey)
