@@ -22,6 +22,4 @@ spec:
             - containerPort: 8080
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: local
-      imagePullSecrets:
-        - name: ecr-secret
+              value: dev

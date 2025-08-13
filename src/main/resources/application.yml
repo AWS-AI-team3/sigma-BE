@@ -3,19 +3,3 @@ spring:
     name: sigma-BE
   profiles:
     active: local
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: local
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: dev
-
----
