@@ -1,6 +1,8 @@
 package com.awsgbsa.sigma_BE.face.service;
 
+import com.awsgbsa.sigma_BE.face.dto.AIDetectRequestDto;
 import com.awsgbsa.sigma_BE.face.dto.AIVerifyRequestDto;
+import com.awsgbsa.sigma_BE.face.dto.DetectResultDto;
 import com.awsgbsa.sigma_BE.face.dto.VerifyResultDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +29,38 @@ public class RekognitionService {
 
     @Value("${ai.rekognition.detect-url}")
     private String detectEndpoint;
+
+    public DetectResultDto detectFace(String targetKey){
+        AIDetectRequestDto req = AIDetectRequestDto.builder()
+                .key(targetKey).build();
+        log.info("[Rekognition Detect Service] key={}", targetKey);
+
+        String rawResponse = webClient.post()
+                .uri(detectEndpoint)
+                .bodyValue(req)
+                .exchangeToMono(response ->
+                        response.bodyToMono(String.class)
+                                .map(body -> {
+                                    log.info("[Rekognition Detect Service] Http Status -- {}", response.statusCode());
+                                    log.info("[Rekognition Detect Service] Raw Response -- {}", body);
+                                    return body;
+                                })
+                )
+                .timeout(Duration.ofSeconds(5))
+                .block();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            DetectResultDto res = mapper.readValue(rawResponse, DetectResultDto.class);
+
+            if (!res.isSuccess()) {
+                throw new RuntimeException("AI 서버 에러: " + rawResponse);
+            }
+
+            return res;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("응답 파싱 실패: " + rawResponse, e);
+        }
+    }
 
     public VerifyResultDto verifyFace(String authKey, String registerKey) {
         AIVerifyRequestDto req = AIVerifyRequestDto.builder()

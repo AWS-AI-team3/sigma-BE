@@ -3,10 +3,7 @@ package com.awsgbsa.sigma_BE.face.controller;
 import com.awsgbsa.sigma_BE.common.ApiResponse;
 import com.awsgbsa.sigma_BE.exception.CustomException;
 import com.awsgbsa.sigma_BE.exception.ErrorCode;
-import com.awsgbsa.sigma_BE.face.dto.PresignRequestDto;
-import com.awsgbsa.sigma_BE.face.dto.PresignResponseDto;
-import com.awsgbsa.sigma_BE.face.dto.ClientVerifyRequestDto;
-import com.awsgbsa.sigma_BE.face.dto.VerifyResultDto;
+import com.awsgbsa.sigma_BE.face.dto.*;
 import com.awsgbsa.sigma_BE.face.service.S3Service;
 import com.awsgbsa.sigma_BE.face.service.RekognitionService;
 import com.awsgbsa.sigma_BE.security.jwt.JwtUtil;
@@ -78,6 +75,29 @@ public class FaceDetectController {
                 .build();
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+
+    @PostMapping("/detect")
+    @Operation(summary = "얼굴사진 유효성 확인 요청",
+            description = "FE에서 S3에 올려둔 사진의 키를 받아 분석에 유효한 사진인지 확인하는 필터링 작업 -> 유효하지 않다면 제거작업")
+    public ResponseEntity<ApiResponse<?>> detectValidation(
+            @RequestBody @Valid ClientDetectRequestDto clientDetectRequestDto, HttpServletRequest request
+    ){
+        String token = jwtUtil.resolveToken(request);
+        Long userId = jwtUtil.extractUserId(token, false);
+
+        // 소유검증 (auth/{해당사용자의 userId}/ 로 시작하는지) -> 크로스유저, 디렉토리 트래버설 방지
+        /// ///
+        log.info("[Rekognition Detect controller] 소유검증 확인완료");
+
+        DetectResultDto result = rekognitionService.detectFace(clientDetectRequestDto.getTargetKey());
+        if(result.isFace()){
+            log.info("[Rekognition Detect controller] 인증확인 완료 - valid");
+        } else {
+            log.info("[Rekognition Detect controller] 인증확인 완료 - indvalid");
+        }
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
 
     @PostMapping("/verify")
     @Operation(summary = "얼굴인증 요청",
