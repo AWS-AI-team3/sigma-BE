@@ -31,6 +31,15 @@ public enum ErrorCode {
 
     FORBIDDEN_KEY(HttpStatus.BAD_REQUEST, "유효하지 않은 사진접근key 요청입니다."),
 
+    AI_PROCESSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "[AI처리 오류] AI 서버 처리내용 - 실패"),
+    PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "응답 파싱 실패" ),
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "[AI처리 오류] 잘못된 요청"),
+    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "[AI처리 오류] 대상 이미지를 찾을 수 없음"),
+    AI_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "[AI처리 오류] AI 서버 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."),
+    UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "[AI처리 오류] 예상치 못한 오류"),
+    INVALID_FACE(HttpStatus.BAD_REQUEST, "[AI처리 오류] 인증에 등록가능한 유효한 얼굴사진이 아닙니다."),
+    MISMATCH_FACE(HttpStatus.UNAUTHORIZED, "[AI처리 오류] 얼굴인증에 실패하였습니다."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버내부 문제가 발생했습니다." )
     ;
 

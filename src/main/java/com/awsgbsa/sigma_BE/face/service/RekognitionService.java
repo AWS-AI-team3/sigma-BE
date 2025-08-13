@@ -23,6 +23,7 @@ import java.time.Duration;
 public class RekognitionService {
 
     private final WebClient webClient;
+    private final AIClientHelper aiClientHelper;
 
     @Value("${ai.rekognition.verify-url}")
     private String verifyEndpoint;
@@ -30,38 +31,16 @@ public class RekognitionService {
     @Value("${ai.rekognition.detect-url}")
     private String detectEndpoint;
 
+    // 얼굴감지
     public DetectResultDto detectFace(String targetKey){
         AIDetectRequestDto req = AIDetectRequestDto.builder()
                 .key(targetKey).build();
         log.info("[Rekognition Detect Service] key={}", targetKey);
 
-        String rawResponse = webClient.post()
-                .uri(detectEndpoint)
-                .bodyValue(req)
-                .exchangeToMono(response ->
-                        response.bodyToMono(String.class)
-                                .map(body -> {
-                                    log.info("[Rekognition Detect Service] Http Status -- {}", response.statusCode());
-                                    log.info("[Rekognition Detect Service] Raw Response -- {}", body);
-                                    return body;
-                                })
-                )
-                .timeout(Duration.ofSeconds(5))
-                .block();
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            DetectResultDto res = mapper.readValue(rawResponse, DetectResultDto.class);
-
-            if (!res.isSuccess()) {
-                throw new RuntimeException("AI 서버 에러: " + rawResponse);
-            }
-
-            return res;
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("응답 파싱 실패: " + rawResponse, e);
-        }
+        return callAiServer(detectEndpoint, req, DetectResultDto.class);
     }
 
+    // 얼굴검증
     public VerifyResultDto verifyFace(String authKey, String registerKey) {
         AIVerifyRequestDto req = AIVerifyRequestDto.builder()
                 .src_key(authKey)
@@ -69,31 +48,29 @@ public class RekognitionService {
                 .build();
         log.info("[Rekognition Verify Service] src_key={}, tgt_key={}", authKey, registerKey);
 
-        String rawResponse = webClient.post()
-                .uri(verifyEndpoint)
-                .bodyValue(req)
-                .exchangeToMono(response ->
-                        response.bodyToMono(String.class)
-                                .map(body -> {
-                                    log.info("[Rekognition Verify Service] Http Status -- {}", response.statusCode());
-                                    log.info("[Rekognition Verify Service] Raw Response -- {}", body);
-                                    return body;
-                                })
-                )
-                .timeout(Duration.ofSeconds(5))
+        return callAiServer(verifyEndpoint, req, VerifyResultDto.class);
+    }
+
+    // 공통모델호출 메서드
+    private <T> T callAiServer(String uri, Object requestDto, Class<T> responseClass) {
+        return webClient.post()
+                .uri(uri)
+                .bodyValue(requestDto)
+                .exchangeToMono(response -> {
+                    HttpStatusCode status = response.statusCode();
+                    return response.bodyToMono(String.class)
+                            .flatMap(body -> {
+                                log.info("[AI Raw Response] {}", body);
+
+                                if (status.is2xxSuccessful()) {
+                                    // 정상 응답 → DTO 변환 (success=false도 그대로 반환)
+                                    return aiClientHelper.parseResponseBody(body, responseClass, res -> true);
+                                } else {
+                                    // 에러 응답 → CustomException 변환
+                                    return Mono.error(aiClientHelper.mapToCustomException(status, body));
+                                }
+                            });
+                })
                 .block();
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            VerifyResultDto res = mapper.readValue(rawResponse, VerifyResultDto.class);
-
-            if (!res.isSuccess()) {
-                throw new RuntimeException("AI 서버 에러: " + rawResponse);
-            }
-
-            return res;
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("응답 파싱 실패: " + rawResponse, e);
-        }
     }
 }
