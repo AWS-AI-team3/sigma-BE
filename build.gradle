@@ -55,6 +55,8 @@ dependencies {
 	// WebClient만 필요 시 (reactive 앱 아님) — starter-webflux 대신 이걸로
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+	//s3
+	implementation "software.amazon.awssdk:s3:2.25.40"
 }
 
 tasks.named('test') {
