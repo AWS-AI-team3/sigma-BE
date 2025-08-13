@@ -29,6 +29,8 @@ public enum ErrorCode {
     INVALID_MOTION_VALUE(HttpStatus.BAD_REQUEST, "유효하지 않은 모션값 설정입니다."),
     USER_SETTINGS_FAIL(HttpStatus.BAD_REQUEST, "사용자 설정변경에 실패하였습니다."),
 
+    FORBIDDEN_KEY(HttpStatus.BAD_REQUEST, "유효하지 않은 사진접근key 요청입니다."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버내부 문제가 발생했습니다." )
     ;
 
