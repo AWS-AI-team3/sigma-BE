@@ -39,7 +39,29 @@ public class FaceDetectController {
         String token = jwtUtil.resolveToken(request);
         Long userId = jwtUtil.extractUserId(token, false);
 
-        String objectKey = "register/%d/%s".formatted( userId, UUID.randomUUID().toString());
+        String objectKey = "register/%d/current".formatted(userId);
+        URL url = presignService.presignPut(objectKey, presignRequestDto.getContentType());
+        PresignResponseDto response = PresignResponseDto.builder()
+                .url(url.toString())
+                .objectKey(objectKey)
+                .contentType(presignRequestDto.getContentType())
+                .build();
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PostMapping("/verify/presign")
+    @Operation(summary = "얼굴검증 사진 등록 URL발급",
+            description = """
+                - 요청 필드 contentType: 허용값은 image/jpeg, image/png, image/webp, image/heic
+                - 주의: 업로드시 'Content-Type' 헤더 값이 요청한 값과 반드시 같아야 합니다!!
+            """)
+    public ResponseEntity<ApiResponse<?>> getVerifyUrl(
+            @RequestBody @Valid PresignRequestDto presignRequestDto, HttpServletRequest request
+    ){
+        String token = jwtUtil.resolveToken(request);
+        Long userId = jwtUtil.extractUserId(token, false);
+
+        String objectKey = "auth/%d/%s".formatted( userId, UUID.randomUUID().toString());
         URL url = presignService.presignPut(objectKey, presignRequestDto.getContentType());
         PresignResponseDto response = PresignResponseDto.builder()
                 .url(url.toString())
