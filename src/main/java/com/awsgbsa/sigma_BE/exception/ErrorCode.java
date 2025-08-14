@@ -42,6 +42,7 @@ public enum ErrorCode {
 
     FACE_NOT_REGISTERED(HttpStatus.UNAUTHORIZED, "얼굴인증을 등록하지 않은 상태입니다."),
     FACE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "얼굴인증이 아직 진행되지 않았습니다."),
+    FACE_MISTMATCH(HttpStatus.UNAUTHORIZED, "얼굴인증에 실패하였습니다.(결과처리=false)"),
 
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버내부 문제가 발생했습니다." )

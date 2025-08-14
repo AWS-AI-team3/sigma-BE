@@ -144,7 +144,7 @@ public class FaceAuthController {
             faceSessionService.createSession(userId);
             return ResponseEntity.ok(ApiResponse.success("얼굴인증 완료, 세션발급 완료"));
         } else {
-            throw new CustomException(ErrorCode.INVALID_FACE);
+            throw new CustomException(ErrorCode.FACE_MISTMATCH);
         }
     }
 
