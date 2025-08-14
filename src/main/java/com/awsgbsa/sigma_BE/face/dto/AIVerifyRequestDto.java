@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AIVerifyRequestDto {
-    private String src_key;
-    private String tgt_key;
+    private String key1;
+    private String key2;
 }

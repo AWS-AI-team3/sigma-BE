@@ -43,10 +43,10 @@ public class RekognitionService {
     // 얼굴검증(인증)
     public VerifyResultDto verifyFace(String authKey, String registerKey) {
         AIVerifyRequestDto req = AIVerifyRequestDto.builder()
-                .src_key(authKey)
-                .tgt_key(registerKey)
+                .key1(authKey)
+                .key2(registerKey)
                 .build();
-        log.info("[Rekognition Verify Service] src_key={}, tgt_key={}", authKey, registerKey);
+        log.info("[Rekognition Verify Service] src_key(key1)={}, tgt_key(key2)={}", authKey, registerKey);
 
         return callAiServer(verifyEndpoint, req, VerifyResultDto.class);
     }

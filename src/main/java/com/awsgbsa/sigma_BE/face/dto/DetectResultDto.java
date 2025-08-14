@@ -11,9 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetectResultDto {
-    private boolean success;
-    @JsonProperty("is_face")
-    private boolean isFace;
-    private int count;
     private String message;
+    private Data data;
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Data {
+        @JsonProperty("is_face")
+        private boolean isFace;
+        @JsonProperty("face_count")
+        private int faceCount;
+    }
 }

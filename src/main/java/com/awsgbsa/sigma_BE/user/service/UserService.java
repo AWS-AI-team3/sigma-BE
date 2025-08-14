@@ -5,6 +5,7 @@ import com.awsgbsa.sigma_BE.exception.ErrorCode;
 import com.awsgbsa.sigma_BE.user.domain.User;
 import com.awsgbsa.sigma_BE.user.dto.UserInfoResponse;
 import com.awsgbsa.sigma_BE.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,12 @@ public class UserService {
                 .profileUrl(user.getProfileUrl())
                 .subscriptStatus(user.getSubscriptStatus().name())
                 .build();
+    }
+
+    @Transactional
+    public void updateFaceRegistered(Long userId) {
+        User user = findByUserId(userId);
+        user.setFaceRegistered(true);
+        userRepository.save(user);
     }
 }

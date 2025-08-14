@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
@@ -52,5 +53,14 @@ public class S3Service {
                 .build();
 
         s3Client.deleteObject(request);
+    }
+
+    public boolean existsObject(String authKey) {
+        try {
+            s3Client.headObject(b -> b.bucket(bucket).key(authKey));
+            return true;
+        } catch (NoSuchKeyException e) {
+            return false;
+        }
     }
 }

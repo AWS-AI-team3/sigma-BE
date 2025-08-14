@@ -9,8 +9,8 @@ import lombok.Getter;
 public class PresignRequestDto {
     @NotBlank(message = "contentType은 필수입니다.")
     @Pattern(
-            regexp = "image/(jpeg|png|webp|heic)",
-            message = "허용되지 않은 contentType 입니다. (image/jpeg, image/png, image/webp, image/heic)"
+            regexp = "image/(jpeg|jpg|png|webp|heic)",
+            message = "허용되지 않은 contentType 입니다. (image/jpeg, image/jpg, image/png, image/webp, image/heic)"
     )
     @Schema(
             description = "허용되는 이미지 MIME 타입",

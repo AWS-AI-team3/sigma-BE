@@ -29,4 +29,6 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private SubscriptStatus subscriptStatus;
+
+    private boolean faceRegistered = false;
 }

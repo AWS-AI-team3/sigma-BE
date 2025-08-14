@@ -40,6 +40,10 @@ public enum ErrorCode {
     INVALID_FACE(HttpStatus.BAD_REQUEST, "[AI처리 오류] 인증에 등록가능한 유효한 얼굴사진이 아닙니다."),
     MISMATCH_FACE(HttpStatus.UNAUTHORIZED, "[AI처리 오류] 얼굴인증에 실패하였습니다."),
 
+    FACE_NOT_REGISTERED(HttpStatus.UNAUTHORIZED, "얼굴인증을 등록하지 않은 상태입니다."),
+    FACE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "얼굴인증이 아직 진행되지 않았습니다."),
+
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버내부 문제가 발생했습니다." )
     ;
 

@@ -8,6 +8,7 @@ import com.awsgbsa.sigma_BE.face.service.FaceSessionService;
 import com.awsgbsa.sigma_BE.face.service.S3Service;
 import com.awsgbsa.sigma_BE.face.service.RekognitionService;
 import com.awsgbsa.sigma_BE.security.jwt.JwtUtil;
+import com.awsgbsa.sigma_BE.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ public class FaceAuthController {
     private final S3Service s3Service;
     private final RekognitionService rekognitionService;
     private final FaceSessionService faceSessionService;
+    private final UserService userService;
 
     @PostMapping("/register/presign")
     @Operation(summary = "얼굴인증 사진 등록 URL발급",
@@ -46,7 +48,7 @@ public class FaceAuthController {
         String token = jwtUtil.resolveToken(request);
         Long userId = jwtUtil.extractUserId(token, false);
 
-        String objectKey = "register/%d/current.jpg".formatted(userId);
+        String objectKey = "register/%d/current".formatted(userId);
         URL url = s3Service.presignPut(objectKey, presignRequestDto.getContentType());
         PresignResponseDto response = PresignResponseDto.builder()
                 .url(url.toString())
@@ -68,6 +70,11 @@ public class FaceAuthController {
         String token = jwtUtil.resolveToken(request);
         Long userId = jwtUtil.extractUserId(token, false);
 
+        // 등록 여부 검사
+        if (!userService.findByUserId(userId).isFaceRegistered()) {
+            throw new CustomException(ErrorCode.FACE_NOT_REGISTERED);
+        }
+
         String objectKey = "auth/%d/%s".formatted( userId, UUID.randomUUID().toString());
         URL url = s3Service.presignPut(objectKey, presignRequestDto.getContentType());
         PresignResponseDto response = PresignResponseDto.builder()
@@ -86,16 +93,18 @@ public class FaceAuthController {
     ) {
         Long userId = jwtUtil.extractUserId(jwtUtil.resolveToken(request), false);
 
-        String registerKey = "register/" + userId + "/current.jpg";
+        String registerKey = "register/" + userId + "/current";
 
         // Detect 작업
         DetectResultDto detectResult = rekognitionService.detectFace(registerKey);
-        if (!detectResult.isFace()) {
+        if (!detectResult.getData().isFace()) {
             // 실패 시 사진 삭제
             s3Service.deleteObject(registerKey);
             throw new CustomException(ErrorCode.INVALID_FACE);
         }
 
+        // 사용자 얼굴등록상태로 업데이트!!
+        userService.updateFaceRegistered(userId);
         return ResponseEntity.ok(ApiResponse.success("얼굴인증 등록완료"));
     }
 
@@ -107,7 +116,7 @@ public class FaceAuthController {
     ) {
         Long userId = jwtUtil.extractUserId(jwtUtil.resolveToken(request), false);
         String authKey = requestDto.getAuthPhotokey();
-        String registerKey = "register/" + userId + "/current.jpg";
+        String registerKey = "register/" + userId + "/current";
 
         // 소유검증
         if (authKey == null || !authKey.startsWith("auth/" + userId + "/")) {
@@ -116,7 +125,7 @@ public class FaceAuthController {
 
         // 1. Detect 작업
         DetectResultDto detectResult = rekognitionService.detectFace(authKey);
-        if (!detectResult.isFace()) {
+        if (!detectResult.getData().isFace()) {
             s3Service.deleteObject(authKey);
             throw new CustomException(ErrorCode.INVALID_FACE);
         }
@@ -131,12 +140,25 @@ public class FaceAuthController {
         }
 
         if(verifyResult.isMatch()){
-            String faceSessionToken = faceSessionService.createSession(userId);
-            FaceSessionResponseDto sessionToken = FaceSessionResponseDto.builder().faceSessionToken(faceSessionToken).build();
-            return ResponseEntity.ok(ApiResponse.success(sessionToken));
+            // facesession token발급
+            faceSessionService.createSession(userId);
+            return ResponseEntity.ok(ApiResponse.success("얼굴인증 완료, 세션발급 완료"));
         } else {
             throw new CustomException(ErrorCode.INVALID_FACE);
         }
     }
+
+    @PostMapping("/session/check")
+    @Operation(summary = "얼굴 인증 여부 확인",
+            description = "해당 유저아이디로 발급된 faceSession이 redis에 존재하는지 확인하여 얼굴인증확인여부를 판단")
+    public ResponseEntity<ApiResponse<?>> checkSession(HttpServletRequest request) {
+        Long userId = jwtUtil.extractUserId(jwtUtil.resolveToken(request), false);
+        if(faceSessionService.validateSession(userId)){
+            return ResponseEntity.ok(ApiResponse.success("인증확인이 완료된 사용자입니다."));
+        } else {
+            throw new CustomException(ErrorCode.FACE_UNAUTHORIZED);
+        }
+    }
+
 }
 
