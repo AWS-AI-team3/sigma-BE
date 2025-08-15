@@ -14,10 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "사용자 인증", description = "사용자 인증 관련 API")
 @RequestMapping("/v1/auth")
@@ -35,7 +32,7 @@ public class AuthController {
             @Parameter(description = "구글 로그인에 필요한 code값", required = true)
             @RequestBody GoogleLoginRequest loginRequest
     ){
-        LoginResponse loginResponse = googleOauthService.login(loginRequest);
+        LoginResponse loginResponse = googleOauthService.loginWithIdToken(loginRequest);
         return ResponseEntity.ok(ApiResponse.success(loginResponse));
     }
 

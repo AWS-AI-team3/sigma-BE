@@ -24,7 +24,8 @@ public class Constants {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-resources/**",
-            "/webjars/**"
+            "/webjars/**",
+            "/v1/auth/google/callback"
     );
 
     // jwt 인증헤더

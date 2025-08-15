@@ -44,8 +44,10 @@ public enum ErrorCode {
     FACE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "얼굴인증이 아직 진행되지 않았습니다."),
     FACE_MISTMATCH(HttpStatus.UNAUTHORIZED, "얼굴인증에 실패하였습니다.(결과처리=false)"),
 
+    INVALID_ID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 Google IdToken값 입니다."),
+    GOOGLE_ID_TOKEN_VERIFY_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "Google IdToken을 로드할 수 없습니다." ),
 
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버내부 문제가 발생했습니다." )
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버내부 문제가 발생했습니다."),
     ;
 
     private final HttpStatus status;
