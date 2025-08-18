@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sigma-argo
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/AWS-AI-team3/sigma-BE.git
+    targetRevision: main
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:  # 자동 동기화 활성화
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

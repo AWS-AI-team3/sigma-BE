@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: sigma-backend
-          image: 048271428028.dkr.ecr.ap-northeast-2.amazonaws.com/sigma-backend:__IMAGE_TAG__
+          image: 048271428028.dkr.ecr.ap-northeast-2.amazonaws.com/sigma-backend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

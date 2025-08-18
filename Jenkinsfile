@@ -6,9 +6,7 @@ pipeline {
         AWS_CREDENTIALS = credentials('aws-user')
         ECR_REGISTRY = "048271428028.dkr.ecr.ap-northeast-2.amazonaws.com"
         ECR_REPO = "sigma-backend"
-        DEPLOYMENT_NAME = "sigma-backend"
-        K8S_NAMESPACE   = "default"
-        IMAGE_TAG       = "${BUILD_NUMBER}"
+        IMAGE_TAG = "latest"
     }
 
     stages{
@@ -27,7 +25,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t $ECR_REGISTRY/$ECR_REPO:${IMAGE_TAG} ."
+                    sh "docker build -t $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG ."
                 }
             }
         }
@@ -43,23 +41,8 @@ pipeline {
 
         stage('Push to ECR') {
             steps {
-                sh "docker push $ECR_REGISTRY/$ECR_REPO:${IMAGE_TAG}"
+                sh "docker push $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG"
             }
         }
-
-        stage('Restart Deployment') {
-            steps {
-                script {
-                    sh """
-                          export KUBECONFIG=/root/.kube/config
-                          sed "s|__IMAGE_TAG__|${BUILD_NUMBER}|g" k8s/deployment.yaml > k8s/deployment_rendered.yaml
-                          kubectl apply -f k8s/deployment_rendered.yaml
-                          kubectl rollout status deployment/sigma-backend -n default
-                       """
-                }
-            }
-        }
-
     }
-
 }
