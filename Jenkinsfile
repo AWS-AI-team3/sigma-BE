@@ -6,6 +6,8 @@ pipeline {
         AWS_CREDENTIALS = credentials('aws-user')
         ECR_REGISTRY = "048271428028.dkr.ecr.ap-northeast-2.amazonaws.com"
         ECR_REPO = "sigma-backend"
+        DEPLOYMENT_NAME = "sigma-backend"
+        K8S_NAMESPACE   = "default"
     }
 
     stages{
@@ -21,21 +23,10 @@ pipeline {
             }
         }
 
-        stage('Generate Image Tag') {
-            steps {
-                script {
-                    // UNIX timestamp 기반 태그 (충돌 거의 없음)
-                    IMAGE_TAG = sh(returnStdout: true, script: "date +%s").trim()
-                    env.IMAGE_TAG = IMAGE_TAG
-                    echo "Generated IMAGE_TAG: ${IMAGE_TAG}"
-                }
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG ."
+                    sh "docker build -t $ECR_REGISTRY/$ECR_REPO:latest ."
                 }
             }
         }
@@ -51,7 +42,18 @@ pipeline {
 
         stage('Push to ECR') {
             steps {
-                sh "docker push $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG"
+                sh "docker push $ECR_REGISTRY/$ECR_REPO:latest"
+            }
+        }
+
+        stage('Restart Deployment') {
+            steps {
+                script {
+                    sh "kubectl rollout restart deployment/${DEPLOYMENT_NAME} -n ${K8S_NAMESPACE}"
+
+                    // 롤아웃 완료될 때까지 대기
+                    sh "kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${K8S_NAMESPACE}"
+                }
             }
         }
 
