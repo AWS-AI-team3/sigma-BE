@@ -4,7 +4,7 @@ pipeline {
     environment {
         AWS_REGION = "ap-northeast-2"
         AWS_CREDENTIALS = credentials('aws-user')
-        GITHUB_PAT = credentials('github-pat')
+//         GITHUB_PAT = credentials('github-pat')
         ECR_REGISTRY = "048271428028.dkr.ecr.ap-northeast-2.amazonaws.com"
         ECR_REPO = "sigma-backend"
     }
