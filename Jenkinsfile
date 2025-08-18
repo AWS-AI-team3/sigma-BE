@@ -49,10 +49,11 @@ pipeline {
         stage('Restart Deployment') {
             steps {
                 script {
-                    sh "kubectl rollout restart deployment/${DEPLOYMENT_NAME} -n ${K8S_NAMESPACE}"
-
-                    // 롤아웃 완료될 때까지 대기
-                    sh "kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${K8S_NAMESPACE}"
+                    sh '''
+                          export KUBECONFIG=/root/.kube/config
+                          kubectl delete pod -l app=sigma-backend -n default || true
+                          kubectl rollout restart deployment/sigma-backend -n default
+                        '''
                 }
             }
         }
