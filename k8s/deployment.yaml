@@ -14,6 +14,8 @@ spec:
     metadata:
       labels:
         app: sigma-backend
+      annotations:
+        buildTimestamp: "{{ .Values.buildTimestamp }}"
     spec:
       containers:
         - name: sigma-backend
