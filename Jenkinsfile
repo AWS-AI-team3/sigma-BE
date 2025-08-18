@@ -74,7 +74,6 @@ pipeline {
                       git add k8s/deployment.yaml
                       git commit -m "[jenkins] Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
                       git push origin HEAD:main
-
                     """
                 }
             }
