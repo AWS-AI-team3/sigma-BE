@@ -59,15 +59,21 @@ pipeline {
             steps {
                     withCredentials([string(credentialsId: 'github-pat-text', variable: 'GITHUB_PAT')]) {
                         sh '''#!/bin/bash
-                          sed -i 's#image: ${ECR_REGISTRY}/${ECR_REPO}:.*#image: ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}#' k8s/deployment.yaml
+                          set -e
+
+                          git fetch origin main
+                          git checkout -B main origin/main
+
+                          # 이미지 태그 갱신
+                          sed -i "s#image: ${ECR_REGISTRY}/${ECR_REPO}:.*#image: ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}#" k8s/deployment.yaml
 
                           git config user.name "rudalsss"
                           git config user.email "linda284@naver.com"
-                          git checkout main
 
                           git add k8s/deployment.yaml
                           git commit -m "[jenkins] Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
-                          git push https://${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE.git HEAD:main
+
+                          git push https://${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE.git main --force
                         '''
                     }
             }
