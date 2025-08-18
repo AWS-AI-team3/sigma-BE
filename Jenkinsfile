@@ -11,10 +11,12 @@ pipeline {
     stages{
         stage('Checkout') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/main']],
-                    userRemoteConfigs: [[url: 'https://github.com/AWS-AI-team3/sigma-BE.git']]
+                checkout([$class: 'GitSCM',
+                  branches: [[name: "*/main"]],
+                  userRemoteConfigs: [[
+                    url: 'https://github.com/AWS-AI-team3/sigma-BE.git',
+                    credentialsId: 'github-pat'
+                  ]]
                 ])
             }
         }
@@ -55,8 +57,7 @@ pipeline {
 
         stage('Update manifest & Push') {
             steps {
-                withCredentials([string(credentialsId: 'github-pat-text', variable: 'GITHUB_PAT')])  {
-                    sh """
+                sh """
                       sed -i 's#image: ${ECR_REGISTRY}/${ECR_REPO}:.*#image: ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}#' k8s/deployment.yaml
 
                       git config user.name "rudalsss"
@@ -66,8 +67,7 @@ pipeline {
                       git add k8s/deployment.yaml
                       git commit -m "[jenkins] Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
                       git push origin HEAD:main
-                    """
-                }
+                """
             }
         }
 
