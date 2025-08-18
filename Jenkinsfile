@@ -55,32 +55,6 @@ pipeline {
             }
         }
 
-        stage('Update manifest & Push') {
-            steps {
-                    withCredentials([string(credentialsId: 'github-pat-text', variable: 'GITHUB_PAT')]) {
-                        sh '''#!/bin/bash
-                          set -e
-
-                          git fetch origin main
-                          git checkout -B main origin/main
-
-                          # 이미지 태그 갱신
-                          sed -i "s#image: ${ECR_REGISTRY}/${ECR_REPO}:.*#image: ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}#" k8s/deployment.yaml
-
-                          git config user.name "rudalsss"
-                          git config user.email "linda284@naver.com"
-
-                          git add k8s/deployment.yaml
-                          git commit -m "[jenkins] Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
-
-                          git remote set-url origin https://${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE.git
-                          git push origin main --force
-                        '''
-                    }
-            }
-        }
-
-
     }
 
 }

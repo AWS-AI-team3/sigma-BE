@@ -2,8 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sigma-backend
+  namespace: default
   labels:
     app: sigma-backend
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: sigma-backend=048271428028.dkr.ecr.ap-northeast-2.amazonaws.com/sigma-backend
+    argocd-image-updater.argoproj.io/sigma-backend.update-strategy: latest
 spec:
   replicas: 3
   selector:
