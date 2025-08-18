@@ -50,13 +50,13 @@ pipeline {
         stage('Restart Deployment') {
             steps {
                 script {
-                    sh '''
+                    sh """
                           export KUBECONFIG=/root/.kube/config
                           kubectl set image deployment/${DEPLOYMENT_NAME} \
                                                     ${DEPLOYMENT_NAME}=$ECR_REGISTRY/$ECR_REPO:${IMAGE_TAG} \
                                                     -n ${K8S_NAMESPACE}
                           kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${K8S_NAMESPACE}
-                        '''
+                       """
                 }
             }
         }
