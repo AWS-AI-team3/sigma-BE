@@ -3,6 +3,13 @@ kind: Application
 metadata:
   name: sigma-argo
   namespace: argocd
+  annotations:
+    # ECR 레포 연결
+    argocd-image-updater.argoproj.io/image-list: sigma-backend=048271428028.dkr.ecr.ap-northeast-2.amazonaws.com/sigma-backend
+    # 업데이트 전략: latest 대신 semver 패턴 대신, numerical(=timestamp) 태그 기준
+    argocd-image-updater.argoproj.io/sigma-backend.update-strategy: latest
+    # 정규식 패턴: 숫자로 된 태그만 추적
+    argocd-image-updater.argoproj.io/sigma-backend.allow-tags: regexp:^\\d{10}$
 spec:
   project: default
   source:
