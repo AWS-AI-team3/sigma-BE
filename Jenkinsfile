@@ -8,6 +8,7 @@ pipeline {
         ECR_REPO = "sigma-backend"
         DEPLOYMENT_NAME = "sigma-backend"
         K8S_NAMESPACE   = "default"
+        IMAGE_TAG       = "${BUILD_NUMBER}"
     }
 
     stages{
@@ -26,7 +27,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t $ECR_REGISTRY/$ECR_REPO:latest ."
+                    sh "docker build -t $ECR_REGISTRY/$ECR_REPO:${IMAGE_TAG} ."
                 }
             }
         }
@@ -42,7 +43,7 @@ pipeline {
 
         stage('Push to ECR') {
             steps {
-                sh "docker push $ECR_REGISTRY/$ECR_REPO:latest"
+                sh "docker push $ECR_REGISTRY/$ECR_REPO:${IMAGE_TAG}"
             }
         }
 
@@ -51,8 +52,10 @@ pipeline {
                 script {
                     sh '''
                           export KUBECONFIG=/root/.kube/config
-                          kubectl delete pod -l app=sigma-backend -n default || true
-                          kubectl rollout restart deployment/sigma-backend -n default
+                          kubectl set image deployment/${DEPLOYMENT_NAME} \
+                                                    ${DEPLOYMENT_NAME}=$ECR_REGISTRY/$ECR_REPO:${IMAGE_TAG} \
+                                                    -n ${K8S_NAMESPACE}
+                          kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${K8S_NAMESPACE}
                         '''
                 }
             }
