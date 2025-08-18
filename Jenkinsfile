@@ -60,7 +60,8 @@ pipeline {
                     sh """
                       sed -i 's#image: ${ECR_REGISTRY}/${ECR_REPO}:.*#image: ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}#' k8s/deployment.yaml
                       git config user.name "jenkins-bot"
-                      git remote set-url origin https://${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE.git
+                      git config user.email "jenkins@sigma.com"
+                      git remote set-url origin https://${GITHUB_USER}:${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE.git
                       git add k8s/deployment.yaml
                       git commit -m "[jenkins] Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
                       git push origin HEAD:main
