@@ -62,7 +62,7 @@ pipeline {
                 git config user.name "rudalsss"
                 git add k8s/deployment.yaml
                 git commit -m "[jenkins] Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
-                git remote set-url origin https://${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE
+                git remote set-url origin https://x-access-token:${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE
 
                 git push origin HEAD:main
                 """
