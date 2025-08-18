@@ -56,7 +56,7 @@ pipeline {
 
         stage('Update manifest & Push') {
             steps {
-                withCredentials([string(credentialsId: 'github-pat', variable: 'GITHUB_PAT')]) {
+                withCredentials([usernamePassword(credentialsId: 'github-pat', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_PAT')]) {
                     sh """
                       sed -i 's#image: ${ECR_REGISTRY}/${ECR_REPO}:.*#image: ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}#' k8s/deployment.yaml
                       git config user.name "jenkins-bot"
