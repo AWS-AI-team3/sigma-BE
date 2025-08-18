@@ -23,3 +23,8 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: dev
+          envFrom:
+            - configMapRef:
+                name: sigma-config
+            - secretRef:
+                name: sigma-secret
