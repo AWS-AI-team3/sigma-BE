@@ -52,8 +52,9 @@ pipeline {
                 script {
                     sh """
                           export KUBECONFIG=/root/.kube/config
-                          sed "s|__IMAGE_TAG__|${IMAGE_TAG}|g" k8s/deployment.yaml | kubectl apply -f
-                          kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${K8S_NAMESPACE}
+                          sed "s|__IMAGE_TAG__|50|g" k8s/deployment.yaml > k8s/deployment_rendered.yaml
+                          kubectl apply -f k8s/deployment_rendered.yaml
+                          kubectl rollout status deployment/sigma-backend -n default
                        """
                 }
             }
