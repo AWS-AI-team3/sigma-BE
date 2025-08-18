@@ -58,7 +58,7 @@ pipeline {
         stage('Update manifest & Push') {
             steps {
                     withCredentials([string(credentialsId: 'github-pat-text', variable: 'GITHUB_PAT')]) {
-                        sh """
+                        sh '''#!/bin/bash
                           sed -i 's#image: ${ECR_REGISTRY}/${ECR_REPO}:.*#image: ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}#' k8s/deployment.yaml
 
                           git config user.name "rudalsss"
@@ -66,8 +66,8 @@ pipeline {
 
                           git add k8s/deployment.yaml
                           git commit -m "[jenkins] Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
-                          git push https://${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE.git HEAD:main
-                        """
+                          git push https://$GITHUB_PAT@github.com/AWS-AI-team3/sigma-BE.git HEAD:main
+                        '''
                     }
             }
         }
