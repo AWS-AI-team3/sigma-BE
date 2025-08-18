@@ -57,19 +57,11 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'github-pat-text', variable: 'GITHUB_PAT')])  {
                     sh """
-                      echo "[DEBUG] PAT length: \${#GITHUB_PAT}"
-
                       sed -i 's#image: ${ECR_REGISTRY}/${ECR_REPO}:.*#image: ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}#' k8s/deployment.yaml
 
                       git config user.name "rudalsss"
                       git config user.email "linda284@naver.com"
-                      git remote set-url origin https://rudalsss:\$GITHUB_PAT@github.com/AWS-AI-team3/sigma-BE.git
-
-                      echo "[DEBUG] Remote after set-url:"
-                      git remote -v
-
-                      echo "[DEBUG] Try ls-remote (auth test)"
-                      git ls-remote origin || echo "[DEBUG] ls-remote failed"
+                      git remote set-url origin https://rudalsss:${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE.git
 
                       git add k8s/deployment.yaml
                       git commit -m "[jenkins] Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
