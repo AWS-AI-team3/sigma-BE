@@ -63,6 +63,7 @@ pipeline {
 
                           git config user.name "rudalsss"
                           git config user.email "linda284@naver.com"
+                          git checkout main
 
                           git add k8s/deployment.yaml
                           git commit -m "[jenkins] Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
