@@ -12,7 +12,11 @@ pipeline {
     stages{
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[url: 'https://github.com/AWS-AI-team3/sigma-BE.git']]
+                ])
             }
         }
 
@@ -60,7 +64,7 @@ pipeline {
                 git commit -m "[jenkins] Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
                 git remote set-url origin https://${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE
 
-                git push origin main HEAD:main
+                git push origin HEAD:main
                 """
             }
         }
