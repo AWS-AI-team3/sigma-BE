@@ -73,7 +73,8 @@ pipeline {
                           git add k8s/deployment.yaml
                           git commit -m "[jenkins] Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
 
-                          git push https://${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE.git HEAD:main --force
+                          git remote set-url origin https://${GITHUB_PAT}@github.com/AWS-AI-team3/sigma-BE.git
+                          git push origin main --force
                         '''
                     }
             }
