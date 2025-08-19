@@ -11,6 +11,8 @@ metadata:
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:048271428028:certificate/92cb9944-e744-409d-932e-b0218a4c026b
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/healthcheck-path: /test
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
 spec:
   rules:
     - host: www.3-sigma-server.com
