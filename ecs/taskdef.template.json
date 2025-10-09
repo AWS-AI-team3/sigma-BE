@@ -1,0 +1,55 @@
+{
+  "family": "sigma-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "3072",
+  "executionRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/sigmaTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "sigma-backend",
+      "image": "<ACCOUNT_ID>.dkr.ecr.ap-northeast-2.amazonaws.com/sigma-backend:<IMAGE_TAG>",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "secrets": [
+        { "name": "DB_URL", "valueFrom": "/sigma/DB_URL" },
+        { "name": "REDIS_HOST", "valueFrom": "/sigma/REDIS_HOST" },
+        { "name": "REDIS_PORT", "valueFrom": "/sigma/REDIS_PORT" },
+        { "name": "GOOGLE_REDIRECT_URI", "valueFrom": "/sigma/GOOGLE_REDIRECT_URI" },
+        { "name": "AWS_REGION", "valueFrom": "/sigma/AWS_REGION" },
+        { "name": "S3_BUCKET", "valueFrom": "/sigma/S3_BUCKET" },
+        { "name": "AI_REKOGNITION_DETECT_URL", "valueFrom": "/sigma/AI_REKOGNITION_DETECT_URL" },
+        { "name": "AI_REKOGNITION_VERIFY_URL", "valueFrom": "/sigma/AI_REKOGNITION_VERIFY_URL" },
+        { "name": "DB_USERNAME", "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:<ACCOUNT_ID>:secret:<SECRET_NAME>:DB_USERNAME::" },
+        { "name": "DB_PASSWORD", "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:<ACCOUNT_ID>:secret:<SECRET_NAME>:DB_PASSWORD::" },
+        { "name": "REDIS_PASSWORD", "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:<ACCOUNT_ID>:secret:<SECRET_NAME>:REDIS_PASSWORD::" },
+        { "name": "GOOGLE_CLIENT_ID", "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:<ACCOUNT_ID>:secret:<SECRET_NAME>:GOOGLE_CLIENT_ID::" },
+        { "name": "GOOGLE_CLIENT_SECRET", "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:<ACCOUNT_ID>:secret:<SECRET_NAME>:GOOGLE_CLIENT_SECRET::" },
+        { "name": "JWT_ACCESS_SECRET", "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:<ACCOUNT_ID>:secret:<SECRET_NAME>:JWT_ACCESS_SECRET::" },
+        { "name": "JWT_REFRESH_SECRET", "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:<ACCOUNT_ID>:secret:<SECRET_NAME>:JWT_REFRESH_SECRET::" },
+        { "name": "AWS_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:<ACCOUNT_ID>:secret:<SECRET_NAME>:AWS_ACCESS_KEY::" },
+        { "name": "AWS_SECRET_KEY", "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:<ACCOUNT_ID>:secret:<SECRET_NAME>:AWS_SECRET_KEY::" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/sigma-task",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ],
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  }
+}
