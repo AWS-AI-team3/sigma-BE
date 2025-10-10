@@ -1,0 +1,69 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      connection-timeout: 10000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc.lob.non_contextual_creation: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000
+
+google:
+  client-id: ${GOOGLE_CLIENT_ID}
+  client-secret: ${GOOGLE_CLIENT_SECRET}
+  scope:
+    - profile
+    - email
+  redirect-uri: ${GOOGLE_REDIRECT_URI}
+  client-authentication-method: client_secret_basic
+  authorization-uri: https://accounts.google.com/o/oauth2/auth
+  token-uri: https://oauth2.googleapis.com/token
+  user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+  user-name-attribute: id
+
+
+jwt:
+  header: Authorization
+  access-secret: ${JWT_ACCESS_SECRET}
+  refresh-secret: ${JWT_REFRESH_SECRET}
+  access-token-validity-in-seconds: 1209600
+  refresh-token-validity-in-seconds: 900 # 14일
+
+logging:
+  level:
+    org.springframework.security: INFO
+
+aws:
+  s3:
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+    region: ${AWS_REGION}
+    bucket: ${S3_BUCKET}
+    default:
+      ttl-seconds: 600       # 10분
+      content-type: application/octet-stream
+
+ai:
+  rekognition:
+    detect-url: ${AI_REKOGNITION_DETECT_URL}
+    verify-url: ${AI_REKOGNITION_VERIFY_URL}
+
+face-session:
+  prefix: faceSession
+  session-ttl-minutes: 30
