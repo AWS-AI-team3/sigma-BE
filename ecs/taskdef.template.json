@@ -19,6 +19,9 @@
           "appProtocol": "http"
         }
       ],
+      "environment": [
+        { "name": "SPRING_PROFILES_ACTIVE", "value": "dev" }
+      ],
       "secrets": [
         { "name": "DB_URL", "valueFrom": "/sigma/DB_URL" },
         { "name": "REDIS_HOST", "valueFrom": "/sigma/REDIS_HOST" },
