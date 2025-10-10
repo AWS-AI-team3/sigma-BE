@@ -41,3 +41,7 @@ out/
 *.log
 *.env
 application-local.yml
+
+# ECS 실제 설정파일
+/ecs/taskdef.json
+/ecs/service.json
