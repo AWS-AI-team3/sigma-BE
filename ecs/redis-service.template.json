@@ -1,0 +1,26 @@
+{
+  "cluster": "sigma-cluster",
+  "serviceName": "redis-service",
+  "taskDefinition": "redis-task:1",
+  "desiredCount": 1,
+  "launchType": "EC2",
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 100
+  },
+  "schedulingStrategy": "REPLICA",
+  "deploymentController": {
+    "type": "ECS"
+  },
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": ["<PRIVATE_SUBNET_ID_1>", "<PRIVATE_SUBNET_ID_2>"],
+      "securityGroups": ["<REDIS_SG_ID>"],
+      "assignPublicIp": "DISABLED"
+    }
+  },
+  "placementStrategy": [],
+  "placementConstraints": [],
+  "enableECSManagedTags": false,
+  "propagateTags": "NONE"
+}
