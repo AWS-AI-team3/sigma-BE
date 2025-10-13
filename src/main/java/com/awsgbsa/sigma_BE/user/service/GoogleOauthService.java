@@ -47,6 +47,9 @@ public class GoogleOauthService {
     @Value("${google.client-id}")
     private String clientId;
 
+    @Value("${google.ios-client-id}")
+    private String iosClientId;
+
     @Value("${google.client-secret}")
     private String clientSecret;
 
@@ -70,6 +73,63 @@ public class GoogleOauthService {
 
         try {
             googleIdToken = verifier.verify(loginRequest.getIdToken());
+            if (googleIdToken == null) {
+                throw new CustomException(ErrorCode.INVALID_ID_TOKEN);
+            }
+        } catch (GeneralSecurityException | IOException e) {
+            throw new CustomException(ErrorCode.GOOGLE_ID_TOKEN_VERIFY_FAIL);
+        }
+
+        // 2. 사용자 정보 추출
+        GoogleIdToken.Payload payload = googleIdToken.getPayload();
+        String email = payload.getEmail();
+        String name = (String) payload.get("name");
+        String profileUrl = (String) payload.get("picture");
+
+        // 3. DB 유저 확인/생성
+        User user = userRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    User saved = userRepository.save(User.builder()
+                            .email(email)
+                            .userName(name)
+                            .loginProvider(LoginProvider.GOOGLE)
+                            .createdAt(LocalDateTime.now())
+                            .subscriptStatus(SubscriptStatus.FREE)
+                            .profileUrl(profileUrl)
+                            .build());
+
+                    // 동시에 기본설정 생성
+                    userSettingsRepository.save(UserSettings.defaults(saved));
+                    return saved;
+                });
+
+        // 4. JWT 발급
+        String jwtAccessToken = jwtUtil.createAccessToken(user.getId());
+        String jwtRefreshToken = jwtUtil.createRefreshToken(user.getId());
+
+        // Redis에 refreshToken저장
+        try {
+            // Redis에 refreshToken 저장
+            redisTemplate.opsForValue().set("RT:" + user.getId(), jwtRefreshToken, Duration.ofDays(14));
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.REDIS_SAVE_FAIL);
+        }
+
+        return new LoginResponse(jwtAccessToken, jwtRefreshToken);
+    }
+
+    public LoginResponse loginWithIdToken2(GoogleLoginRequest loginRequest) {
+        String idTokenString = loginRequest.getIdToken();
+        GoogleIdToken googleIdToken;
+
+        // idToken 검증
+        try{
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier
+                    .Builder(new NetHttpTransport(), new GsonFactory())
+                    .setAudience(Collections.singletonList(iosClientId)) // iOS Client ID로 검증
+                    .build();
+            googleIdToken = verifier.verify(idTokenString);
+
             if (googleIdToken == null) {
                 throw new CustomException(ErrorCode.INVALID_ID_TOKEN);
             }
