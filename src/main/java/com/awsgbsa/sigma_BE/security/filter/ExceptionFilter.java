@@ -26,6 +26,8 @@ public class ExceptionFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        String uri = request.getRequestURI();
+
         try {
             filterChain.doFilter(request, response);
 //        } catch (AuthenticationException ex) {
@@ -38,11 +40,11 @@ public class ExceptionFilter extends OncePerRequestFilter {
 //            apiResponder.sendError(response, ErrorCode.ACCESS_DENIED, ex);
         } catch (CustomException ex) {
             // 커스텀 예외
-            log.warn("ExceptionFilter - CustomExcetpion : {}", ex.getMessage());
+            log.warn("[ExceptionFilter] CustomException at URI={} → {}", uri, ex.getMessage());
             apiResponder.sendError(response, ex.getErrorCode(), ex);
         } catch (Exception ex) {
             // 기타 모든 예외
-            log.warn("ExceptionFilter - Unexpected Exception : {}", ex.getMessage());
+            log.warn("[ExceptionFilter] Unexpected Exception at URI={} → {}", uri, ex.getMessage());
             apiResponder.sendError(response, ErrorCode.INTERNAL_SERVER_ERROR, ex);
         }
     }

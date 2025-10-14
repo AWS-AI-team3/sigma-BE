@@ -34,6 +34,9 @@ public class JwtFilter extends GenericFilterBean {
 
         // permitAll 경로에 대해서는 jwtfilter를 수행하지 않음( AuthorizationFilter보다 선행 )
         String uri = httpServletRequest.getRequestURI();
+
+        log.debug("[JwtFilter] 요청 URI = {}", uri);
+
         if (isPermitAll(uri)) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
