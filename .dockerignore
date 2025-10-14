@@ -4,3 +4,4 @@ out
 *.iml
 *.log
 **/.DS_Store
+application-local.yml
