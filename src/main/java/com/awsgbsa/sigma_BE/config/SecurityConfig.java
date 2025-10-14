@@ -34,6 +34,11 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
 
     @Bean
+    public JwtFilter jwtFilter(JwtUtil jwtUtil) {
+        return new JwtFilter(jwtUtil);
+    }
+
+    @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 //.cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -52,8 +57,8 @@ public class SecurityConfig {
 //                        .accessDeniedHandler(accessDeniedHandler)
 //                )
 
-                .addFilterBefore(exceptionFilter, JwtFilter.class)
-                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(exceptionFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         ;
         return http.build();
     }
