@@ -52,7 +52,7 @@ public class SecurityConfig {
 //                        .accessDeniedHandler(accessDeniedHandler)
 //                )
 
-                .addFilterBefore(exceptionFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(exceptionFilter, JwtFilter.class)
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
         ;
         return http.build();
