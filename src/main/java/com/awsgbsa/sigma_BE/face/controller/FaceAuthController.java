@@ -37,7 +37,7 @@ public class FaceAuthController {
     private final UserService userService;
 
     @PostMapping("/register/presign")
-    @Operation(summary = "얼굴인증 사진 등록 URL발급",
+    @Operation(summary = "얼굴인증 사진 등록 URL발급 (1)",
             description = """
                 - 요청 필드 contentType: 허용값은 image/jpeg, image/png, image/webp, image/heic
                 - 주의: 업로드시 'Content-Type' 헤더 값이 요청한 값과 반드시 같아야 합니다!!
@@ -59,7 +59,7 @@ public class FaceAuthController {
     }
 
     @PostMapping("/auth/presign")
-    @Operation(summary = "얼굴검증 사진 등록 URL발급",
+    @Operation(summary = "얼굴검증 사진 등록 URL발급 (3)",
             description = """
                 - 요청 필드 contentType: 허용값은 image/jpeg, image/png, image/webp, image/heic
                 - 주의: 업로드시 'Content-Type' 헤더 값이 요청한 값과 반드시 같아야 합니다!!
@@ -86,7 +86,7 @@ public class FaceAuthController {
     }
 
     @PostMapping("/register/complete")
-    @Operation(summary = "얼굴 등록 완료 처리",
+    @Operation(summary = "얼굴 등록 완료 처리 (2)",
             description = "등록 사진 업로드 후 호출하면 detect 검증 후 등록 완료(사용자의 기본 경로 key : /register/{userID}/current.jpg )")
     public ResponseEntity<ApiResponse<?>> completeRegister(
             HttpServletRequest request
@@ -109,7 +109,7 @@ public class FaceAuthController {
     }
 
     @PostMapping("/auth/complete")
-    @Operation(summary = "얼굴 인증 완료 처리",
+    @Operation(summary = "얼굴 인증 완료 처리 (4)",
             description = "인증 사진 업로드 후 호출하면 detect → verify(기존 인증사진 & 전달키의 사진) → 삭제 절차 수행")
     public ResponseEntity<ApiResponse<?>> completeAuth(
             @RequestBody @Valid ClientVerifyRequestDto requestDto, HttpServletRequest request
@@ -149,7 +149,7 @@ public class FaceAuthController {
     }
 
     @PostMapping("/session/check")
-    @Operation(summary = "얼굴 인증 여부 확인",
+    @Operation(summary = "얼굴 인증 여부 확인 (5)",
             description = "해당 유저아이디로 발급된 faceSession이 redis에 존재하는지 확인하여 얼굴인증확인여부를 판단")
     public ResponseEntity<ApiResponse<?>> checkSession(HttpServletRequest request) {
         Long userId = jwtUtil.extractUserId(jwtUtil.resolveToken(request), false);
