@@ -77,3 +77,7 @@ ai:
 face-session:
   prefix: faceSession
   session-ttl-minutes: 30
+
+gateway-token:
+  key: ${GATEWAY_TOKEN_KEY}
+  algorithm: ${GATEWAY_TOKEN_ALG}
