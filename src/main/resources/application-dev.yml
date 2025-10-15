@@ -26,6 +26,7 @@ spring:
 
 google:
   ios-client-id: ${IOS_CLIENT_ID}
+  ios-client-id2: ${IOS_CLIENT_ID_2}
   client-id: ${GOOGLE_CLIENT_ID}
   client-secret: ${GOOGLE_CLIENT_SECRET}
   scope:

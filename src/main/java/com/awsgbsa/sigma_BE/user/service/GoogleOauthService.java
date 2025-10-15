@@ -33,6 +33,7 @@ import java.security.GeneralSecurityException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -49,6 +50,9 @@ public class GoogleOauthService {
 
     @Value("${google.ios-client-id}")
     private String iosClientId;
+
+    @Value("${google.ios-client-id2}")
+    private String iosClientId2;
 
     @Value("${google.client-secret}")
     private String clientSecret;
@@ -126,7 +130,7 @@ public class GoogleOauthService {
         try{
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier
                     .Builder(new NetHttpTransport(), new GsonFactory())
-                    .setAudience(Collections.singletonList(iosClientId)) // iOS Client ID로 검증
+                    .setAudience(List.of(iosClientId, iosClientId2)) // iOS Client ID로 검증
                     .build();
             googleIdToken = verifier.verify(idTokenString);
 
