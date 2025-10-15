@@ -57,5 +57,45 @@ public class GatewayTokenService {
         }
     }
 
+    public boolean validateGatewayToken(String gatewayToken) {
+        try {
+            String decoded = new String(Base64.getUrlDecoder().decode(gatewayToken));
+            String[] parts = decoded.split(":");
 
+            // 기본구조 검증
+            if (parts.length != 3) {
+                log.warn("[GatewayTokenService] 잘못된 토큰 형식입니다.");
+                throw new CustomException(ErrorCode.INVALID_GATEWAY_TOKEN);
+            }
+
+            String userId = parts[0];
+            long exp = Long.parseLong(parts[1]);
+            String sig = parts[2];
+            String payload = userId + ":" + exp;
+
+            // 만료시간 검증
+            if (exp <= System.currentTimeMillis()) {
+                log.warn("[GatewayTokenService] GatewayToken 만료 (exp={}, now={})", exp, System.currentTimeMillis());
+                throw new CustomException(ErrorCode.TOKEN_EXPIRED);
+            }
+
+            // 서명검증
+            String calcSig = sign(payload);
+            boolean valid = calcSig.equals(sig);
+
+            if (!valid) {
+                log.warn("[GatewayTokenService] GatewayToken 서명 불일치: userId={}, exp={}", userId, exp);
+                throw new CustomException(ErrorCode.INVALID_GATEWAY_TOKEN);
+            }
+
+            log.info("[GatewayTokenService] GatewayToken 검증 성공: userId={}, exp={}", userId, exp);
+            return true;
+        } catch (CustomException e) {
+            // 이미 정의된 CustomException은 그대로 전달
+            throw e;
+        } catch (Exception e) {
+            log.error("[GatewayTokenService] 토큰 유효성검증 과정이 실패했습니다.", e);
+            return false;
+        }
+    }
 }
