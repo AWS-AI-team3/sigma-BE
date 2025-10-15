@@ -47,6 +47,9 @@ public enum ErrorCode {
     INVALID_ID_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 Google IdToken값 입니다."),
     GOOGLE_ID_TOKEN_VERIFY_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "Google IdToken을 로드할 수 없습니다." ),
 
+    INVALID_SIGN_ALGORITHM(HttpStatus.INTERNAL_SERVER_ERROR, "잘못된 암호 서명 알고리즘입니다."),
+    INVALID_SIGN_KEY(HttpStatus.INTERNAL_SERVER_ERROR, "잘못돈 암호 서명 키입니다."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버내부 문제가 발생했습니다."),
     ;
 
