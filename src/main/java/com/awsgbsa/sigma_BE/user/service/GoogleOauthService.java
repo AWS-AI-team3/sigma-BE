@@ -149,21 +149,18 @@ public class GoogleOauthService {
         String profileUrl = (String) payload.get("picture");
 
         // 3. DB 유저 확인/생성
-        User user = userRepository.findByEmail(email)
-                .orElseGet(() -> {
-                    User saved = userRepository.save(User.builder()
-                            .email(email)
-                            .userName(name)
-                            .loginProvider(LoginProvider.GOOGLE)
-                            .createdAt(LocalDateTime.now())
-                            .subscriptStatus(SubscriptStatus.FREE)
-                            .profileUrl(profileUrl)
-                            .build());
-
-                    // 동시에 기본설정 생성
-                    userSettingsRepository.save(UserSettings.defaults(saved));
-                    return saved;
-                });
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            user = userRepository.save(User.builder()
+                    .email(email)
+                    .userName(name)
+                    .loginProvider(LoginProvider.GOOGLE)
+                    .createdAt(LocalDateTime.now())
+                    .subscriptStatus(SubscriptStatus.FREE)
+                    .profileUrl(profileUrl)
+                    .build());
+            userSettingsRepository.save(UserSettings.defaults(user));
+        }
 
         // 4. JWT 발급
         String jwtAccessToken = jwtUtil.createAccessToken(user.getId());
