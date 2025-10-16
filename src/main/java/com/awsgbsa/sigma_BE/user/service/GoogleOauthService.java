@@ -122,6 +122,7 @@ public class GoogleOauthService {
         return new LoginResponse(jwtAccessToken, jwtRefreshToken);
     }
 
+    @Transactional
     public LoginResponse loginWithIdToken2(GoogleLoginRequest loginRequest) {
         String idTokenString = loginRequest.getIdToken();
         GoogleIdToken googleIdToken;
