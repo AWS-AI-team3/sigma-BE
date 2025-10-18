@@ -25,6 +25,7 @@ public class UserService {
         User user = findByUserId(userId);
         return UserInfoResponse.builder()
                 .userName(user.getUserName())
+                .email(user.getEmail())
                 .profileUrl(user.getProfileUrl())
                 .subscriptStatus(user.getSubscriptStatus().name())
                 .build();

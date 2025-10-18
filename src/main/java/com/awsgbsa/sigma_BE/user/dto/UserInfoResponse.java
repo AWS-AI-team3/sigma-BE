@@ -8,6 +8,7 @@ import lombok.Getter;
 @Builder
 public class UserInfoResponse {
     private String userName;
+    private String email;
     private String profileUrl;
     private String subscriptStatus;
 }

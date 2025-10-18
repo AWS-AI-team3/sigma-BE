@@ -23,7 +23,7 @@ public class UserController {
     private final JwtUtil jwtUtil;
 
     @GetMapping("/info")
-    @Operation(summary = "유저 기본정보 조회", description = "유저의 이름, 프로필사진URL, 무료 혹은 유료구독여부를 반환합니다.")
+    @Operation(summary = "유저 기본정보 조회", description = "유저의 이름, 이메일, 프로필사진URL, 무료 혹은 유료구독여부를 반환합니다.")
     public ResponseEntity<ApiResponse<?>> getUserInfo(
             HttpServletRequest request
     ){
